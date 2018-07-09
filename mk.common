@@ -1,0 +1,50 @@
+
+COBJECTS    = $(CSOURCES:.c=.o)
+CLIBOBJECTS = $(CLIBSOURCES:.c=.o)
+
+all: $(SUBDIRS) $(PROGRAM) $(LIBRARY)
+
+%.o: %.c
+	@printf " + CC   %$(STRLONG)s <== %$(STRLONG)s\n" "$@" "$<"
+	@$(CC) -o $@ -c $< $(CFLAGS)
+
+%.i: %.c
+	@printf " + PP   %$(STRLONG)s <== %$(STRLONG)s\n" "$@" "$<"
+	@$(CC) -o $@ -E $< $(CFLAGS)
+
+%.l.c: %.l
+	@printf " + LEX  %$(STRLONG)s <== %$(STRLONG)s\n" "$@" "$<"
+	@$(LEX) -o $@ $< $(LFLAGS)
+
+%.tab.c %.tab.h: %.y
+	@printf " + YACC %$(STRLONG)s <== %$(STRLONG)s\n" "$@" "$<"
+	@$(YACC) -d $<
+
+clean: objclean subclean libclean execlean
+objclean:
+	@echo cleaning objects
+	@$(RM) $(COBJECTS)
+	@$(RM) $(CLIBOBJECTS)
+	@$(RM) $(CXXOBJECTS)
+	@$(RM) $(CXXLIBOBJECTS)
+subclean:
+	@echo cleaning subdirs
+	@for dir in $(SUBDIRS) ; do $(MAKE) -C $${dir} clean ; done
+execlean:
+	@echo cleaning programs
+	@$(RM) $(PROGRAM)
+libclean:
+	@echo cleaning libraries
+	@$(RM) $(LIBRARY)
+
+STRLONG  = 15
+STRADV   = 24
+ldexec   = printf " + LINK %$(STRLONG)s\r" "$(1)" && printf "\033[$(STRADV)C<== %$(STRLONG)s\n" $(2) && $(CC) -o $(1) $(2) $(3)
+arexec   = printf " + AR   %$(STRLONG)s\r" "$(1)" && printf "\033[$(STRADV)C<== %$(STRLONG)s\n" $(2) && $(AR) r  $(1) $(2)
+
+$(PROGRAM): $(COBJECTS) $(CXXOBJECTS) $(LIBRARY)
+	@$(call ldexec,$@,$(COBJECTS),$(CFLAGS) $(LDFLAGS))
+
+$(LIBRARY): $(CLIBOBJECTS) $(CXXLIBOBJECTS)
+	@$(call arexec,$@,$^)
+
