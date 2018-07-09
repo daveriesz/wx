@@ -1,6 +1,4 @@
 
-include ../mk.global
-
 PROGRAM = 
 LIBRARY = libdprstrings.a
 
@@ -12,7 +10,7 @@ LDLIBS_extra = -ldprstrings
 
 INSTALL_LOCAL = install_local
 
-include ../mk.targets
+include ../mk.common
 
 dprstrings.o: dprstrings.h
 

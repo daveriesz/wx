@@ -1,6 +1,4 @@
 
-include ../mk.global
-
 PROGRAM = dprjson
 LIBRARY = libdprjson.a
 
@@ -19,7 +17,7 @@ LDLIBS_extra = -ldprjson -ldprstrings
 
 INSTALL_LOCAL = install_local
 
-include ../mk.targets
+include ../mk.common
 
 dprjson.o: json.tab.h jsondata.h
 json.l.c: json.tab.h jsondata.h
