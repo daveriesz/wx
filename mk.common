@@ -7,6 +7,9 @@ YCHEADERS     = $(YSOURCES:%.y=%.tab.h)
 
 all: $(SUBDIRS) $(PROGRAM) $(LIBRARY)
 
+$(SUBDIRS):
+	@$(MAKE) -C $@ $(SUBTARGET)
+
 %.o: %.c
 	@printf " + CC   %$(STRLONG)s <== %$(STRLONG)s\n" "$@" "$<"
 	@$(CC) -o $@ -c $< $(CFLAGS)
@@ -23,7 +26,7 @@ all: $(SUBDIRS) $(PROGRAM) $(LIBRARY)
 	@printf " + YACC %$(STRLONG)s <== %$(STRLONG)s\n" "$@" "$<"
 	@$(YACC) -d $< -b $(shell echo $< | sed "s/\.y$$//g")
 
-clean: objclean subclean libclean execlean
+clean: objclean subclean libclean execlean lexclean
 objclean:
 	@echo cleaning objects
 	@$(RM) $(COBJECTS)
@@ -32,13 +35,18 @@ objclean:
 	@$(RM) $(CXXLIBOBJECTS)
 subclean:
 	@echo cleaning subdirs
-	@for dir in $(SUBDIRS) ; do $(MAKE) -C $${dir} clean ; done
+	@for sub in $(SUBDIRS) ; do $(MAKE) -C $${sub} clean ; done
 execlean:
 	@echo cleaning programs
 	@$(RM) $(PROGRAM)
 libclean:
 	@echo cleaning libraries
 	@$(RM) $(LIBRARY)
+lexclean:
+	@echo cleaning lexer files
+	@$(RM) $(LCSOURCES)
+	@$(RM) $(YCSOURCES)
+	@$(RM) $(YCHEADERS)
 
 STRLONG  = 15
 STRADV   = 24
@@ -51,3 +59,4 @@ $(PROGRAM): $(COBJECTS) $(CXXOBJECTS) $(LIBRARY)
 $(LIBRARY): $(CLIBOBJECTS) $(CXXLIBOBJECTS)
 	@$(call arexec,$@,$^)
 
+.PHONY: $(SUBDIRS)

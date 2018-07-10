@@ -1,31 +1,29 @@
 
 PROGRAM  = wx
 
-CSOURCES = main.c geo.c noaa.c
+CSOURCES = main.c opt.c wxcurl.c geo.c noaa.c
 CFLAGS   = $(COPT) $(CDEF) $(CINC)
 COPT     = -g
 CDEF     = 
-CINC     = -I./json
+CINC     = -I./json -I./strings
 
 LDFLAGS  = $(LDOPT) $(LDDIR) $(LDLIB)
 LDOPT    = 
-LDDIR    = 
-LDLIB    = 
+LDDIR    = -L./json -L./strings
+LDLIB    = -ldprjson -ldprstrings -lcurl
 
-SUBDIRS  = strings
+SUBDIRS  = strings json
 
 include mk.common
 
-strings:
-	@$(MAKE) -C strings
-json:
-	@$(MAKE) -C json
+main.o  : main.c   wx.h
+opt.o   : opt.c    wx.h
+geo.o   : geo.c    wx.h
+noaa.o  : noaa.c   wx.h
+wxcurl.o: wxcurl.c wx.h
 
+run: $(PROGRAM)
+	$(DBG) ./$< -g krei -h
 
-	
-
-STRLONG  = 15
-STRADV   = 24
-ldexec   = printf " + LINK %$(STRLONG)s\r" "$(1)" && printf "\033[$(STRADV)C<== %$(STRLONG)s\n" $(2) && $(CC) -o $(1) $(2) $(3)
-
-.PHONY: strings
+dbg:
+	@$(MAKE) run DBG="gdb --args"
