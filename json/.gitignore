@@ -1,1 +1,6 @@
-.o
+*.o
+dprjson
+json.l.c
+json.tab.c
+json.tab.h
+libdprjson.a
