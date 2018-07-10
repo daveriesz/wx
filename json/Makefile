@@ -3,6 +3,15 @@ PROGRAM = dprjson
 LIBRARY = libdprjson.a
 
 CSOURCES = testmain.c
+CFLAGS   = $(COPT) $(CDEF) $(CINC)
+COPT     = -g
+CDEF     = 
+CINC     = -I../strings
+
+LDFLAGS  = $(LDOPT) $(LDDIR) $(LDLIB)
+LDOPT    = 
+LDDIR    = -L. -L../strings
+LDLIB    = -ldprjson -ldprstrings
 
 CLIBSOURCES = dprjson.c jsondata.c $(LCSOURCES) $(YCSOURCES)
 
