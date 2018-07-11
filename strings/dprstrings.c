@@ -33,3 +33,12 @@ unsigned char *dataapp(unsigned char *dest, size_t oldsz, const unsigned char *s
   memcpy((void *)&(dest[oldsz]), (void *)src, srcsz);
   return dest;
 }
+
+void replace_chr(char *str, char chf, char chr)
+{
+  char *cp;
+  while(cp = strchr(str, chf))
+  {
+    *cp = chr;
+  }
+}

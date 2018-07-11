@@ -15,12 +15,18 @@ char *wx_fetch_url(const char *url);
 
 /*** geo.c ***/
 typedef struct geoloc {
-  double lon, lat;
+  double lat, lon;
   char *query;
   char *name;
 } geoloc;
-void geo_info(const char *arg);
+geoloc *geo_info(const char *arg);
+geoloc *geo_create_geoloc(const char *query, const char *name, double lat, double lon);
+void geo_delete_geoloc(geoloc *glc);
 
 /*** noaa.c ***/
+void noaa_forecast(geoloc *glc);
+
+/*** output.c ***/
+void wx_print_columns(char **cola, char **colb, char sep, int rows, int wida);
 
 #endif /* __WX_H__ */

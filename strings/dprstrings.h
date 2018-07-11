@@ -12,6 +12,8 @@ char *strrew(char *dest, const char *src); /* replace dest with src */
 
 unsigned char *dataapp(unsigned char *dest, size_t oldsz, const unsigned char *src, size_t srcsz);
 
+void replace_chr(char *str, char chf, char chr);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif /* __cplusplus */

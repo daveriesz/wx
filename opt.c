@@ -8,6 +8,8 @@
 
 #include "wx.h"
 
+static geoloc *geo_location = NULL;
+
 static int    opt_argc;
 static char **opt_argv;
 
@@ -21,10 +23,12 @@ typedef struct optarg {
 
 void opt_usage();
 void opt_geo_info();
+void opt_forecast();
 static optarg options[]= 
 {
-  { 1, "-h", "print usage",                  opt_usage     },
+  { 0, "-h", "print usage",                  opt_usage     },
   { 0, "-g", "print geographic information", opt_geo_info  },
+  { 0, "-f", "forecast                    ", opt_forecast  },
 };
 static int option_count = (sizeof(options) / sizeof(optarg) );
 
@@ -101,22 +105,34 @@ void readopt(int __argc, char **__argv)
     }
   }
 
-  opt_usage();
-  opt_geo_info();
-  return;
-
   for(ii=0 ; ii<option_count ; ii++)
   {
     if(options[ii].set != 0)
     {
-//      options[ii].fcn();
+      options[ii].fcn();
     }
-    opt_usage();
-    opt_geo_info();
   }
 }
 
 void opt_geo_info()
 {
-  geo_info(query_str);
+  if(geo_location == NULL) { geo_location = geo_info(query_str); }
+  printf("Geographic Location Information:\n");
+  if(geo_location)
+  {
+    printf("  query     = >>%s<<\n", geo_location->query);
+    printf("  name      = >>%s<<\n", geo_location->name );
+    printf("  latitude  = >>%f<<\n", geo_location->lat  );
+    printf("  longitude = >>%f<<\n", geo_location->lon  );
+  }
+  else
+  {
+    printf("  nothing received\n");
+  }
+}
+
+void opt_forecast()
+{
+  if(geo_location == NULL) { geo_location = geo_info(query_str); }
+  noaa_forecast(geo_location);
 }

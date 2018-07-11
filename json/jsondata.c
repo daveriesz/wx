@@ -365,7 +365,7 @@ char *dj_string_to_string(char     *djs)
 {
 	char *s;
 	malloc_obj(s, char, strlen(djs)+3);
-	sprintf(s, "\"%s\"", djs);
+	sprintf(s, "%s", djs);
 	return s;
 }
 
@@ -373,7 +373,7 @@ char *dj_number_to_string(char     *djn)
 {
 	char *s;
 	malloc_obj(s, char, strlen(djn)+1);
-	sprintf(s, "\"%s\"", djn);
+	sprintf(s, "%s", djn);
 	return s;
 }
 
@@ -381,7 +381,7 @@ char *dj_tfn_to_string   (char     *djt)
 {
 	char *s;
 	malloc_obj(s, char, strlen(djt)+1);
-	sprintf(s, "\"%s\"", djt);
+	sprintf(s, "%s", djt);
 	return s;
 }
 

@@ -41,13 +41,15 @@ char *wx_fetch_url(const char *url)
   struct wx_writedata wxd;
   memset(&wxd, 0, sizeof(wxd));
 
-  printf("wx_fetch_url: URL: %s\n", url);
+  printf("wx_fetch_url: URL: >>%s<<\n", url);
 
   crl = curl_easy_init();
 
-  curl_easy_setopt (crl, CURLOPT_URL          , url           );
-  curl_easy_setopt (crl, CURLOPT_WRITEFUNCTION, wx_fetch_write);
-  curl_easy_setopt (crl, CURLOPT_WRITEDATA    , &wxd          );
+  curl_easy_setopt (crl, CURLOPT_URL           , url           );
+  curl_easy_setopt (crl, CURLOPT_WRITEFUNCTION , wx_fetch_write);
+  curl_easy_setopt (crl, CURLOPT_WRITEDATA     , &wxd          );
+  curl_easy_setopt (crl, CURLOPT_FOLLOWLOCATION, 1L            );
+  curl_easy_setopt (crl, CURLOPT_USERAGENT     , "dpr wx/1.0"  );
   curl_easy_perform(crl);
   curl_easy_cleanup(crl);
 

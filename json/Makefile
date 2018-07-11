@@ -67,6 +67,9 @@ joex: $(PROGRAM)
 	./$< tests/json.org/ex04.json
 	./$< tests/json.org/ex05.json
 
+lax: $(PROGRAM)
+	./$< tests/lax.json
+
 install_local: $(LIBRARY) $(PROGRAM)
 #	@echo " + CP $(PROGRAM) >> $(INSTALLBINDIR)/$(PROGRAM)"
 #	cp "$(PROGRAM)" "$(INSTALLBINDIR)/$(PROGRAM)"

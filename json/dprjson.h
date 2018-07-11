@@ -18,10 +18,15 @@ djValue *dj_get_value   (dprJson *dj, const char *query);
 djValue *dj_get_subvalue(djValue *dv, const char *query);
 //void dj_dump_value (djValue  *djv, FILE *fp);
 char *dj_value_to_string(djValue *djv);
+djValue *dj_value_next(djValue *djv);
 
 /* -1=not an array, 0=empty, >0=length */
 int dj_array_length(djValue *djv);
 
+djValue *dj_array_element(djValue *djv, int nn);
+
 djVType dj_value_type(djValue *djv);
+
+double dj_value_to_number(djValue *dv);
 
 #endif /* __DPRJSON_H__ */

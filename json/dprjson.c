@@ -80,7 +80,7 @@ int dj_array_length(djValue *djv)
 
 djVType dj_value_type(djValue *djv) { return djv->vtype; }
 
-djValue *dj_get_array_element(djValue *djv, int nn)
+djValue *dj_array_element(djValue *djv, int nn)
 {
   djValue *vp;
   int ii;
@@ -92,4 +92,16 @@ djValue *dj_get_array_element(djValue *djv, int nn)
     if(ii == nn) { return vp; }
   }
   return NULL;
+}
+
+djValue *dj_value_next(djValue *djv)
+{
+  if(djv == NULL) { return NULL; }
+  return djv->next;
+}
+
+double dj_value_to_number(djValue *dv)
+{
+  if(dv->vtype != dj_vt_number) { return 0; }
+  return atof(dv->vnumber);
 }

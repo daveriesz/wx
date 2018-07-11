@@ -26,7 +26,8 @@ js_hex     [0-9a-fA-F]
 js_uechar  [ -!#-\[\]-~]
 js_echar   \\["\\bfnrt/]
 js_uncchar \\u{js_hex}{js_hex}{js_hex}{js_hex}
-js_char    {js_uechar}|{js_echar}|{js_uncchar}
+js_extchar [\x80-\xff]
+js_char    {js_uechar}|{js_echar}|{js_uncchar}|{js_extchar}
 js_chars   {js_char}+
 js_quote   [\"]
 js_number  {js_int}|{js_int}{js_frac}|{js_int}{js_exp}|{js_int}{js_frac}{js_exp}
