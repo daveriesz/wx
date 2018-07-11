@@ -66,3 +66,30 @@ dprJson *dj_load_from_data(char *chardata)
 	return dj;
 }
 
+int dj_array_length(djValue *djv)
+{
+  djValue *vp;
+  int ii;
+
+  if(dj_value_type(djv) != dj_vt_array) { return -1; }
+
+  for(ii=0, vp=djv->varray->values ; vp ; ii++, vp=vp->next);
+  
+  return ii;
+}
+
+djVType dj_value_type(djValue *djv) { return djv->vtype; }
+
+djValue *dj_get_array_element(djValue *djv, int nn)
+{
+  djValue *vp;
+  int ii;
+
+  if(dj_value_type(djv) != dj_vt_array) { return NULL; }
+
+  for(ii=0, vp=djv->varray->values ; vp ; ii++, vp=vp->next)
+  {
+    if(ii == nn) { return vp; }
+  }
+  return NULL;
+}

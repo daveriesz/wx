@@ -23,7 +23,7 @@ noaa.o  : noaa.c   wx.h
 wxcurl.o: wxcurl.c wx.h
 
 run: $(PROGRAM)
-	$(DBG) ./$< -g krei -h
+	$(DBG) ./$< -g lax -h
 
 dbg:
 	@$(MAKE) run DBG="gdb --args"

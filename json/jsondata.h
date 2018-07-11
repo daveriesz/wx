@@ -9,35 +9,14 @@ typedef struct _dj_pair     djPair    ;
 typedef struct _dj_array    djArray   ;
 typedef struct _dj_value    djValue   ;
 typedef struct _dj_string   djString  ;
-typedef enum   _dj_vtype    djVType   ;
 
 // typedef struct _dj_members  djMembers ; /* linked list of pairs */
 // typedef struct _dj_elements djElements; /* linked list of values */
 
-/* djObject */
-struct _dj_object
-{
-	djPair *pairs;
-	djObject *next;
-};
-
-/* djPair */
-struct _dj_pair
-{
-	char *name;
-	djValue *value;
-	djPair *next;
-};
-
-/* djArray */
-struct _dj_array
-{
-	djValue *values;
-	djArray *next;
-};
-
-/* djVType */
-enum _dj_vtype { dj_vt_string , dj_vt_number , dj_vt_object , dj_vt_array , dj_vt_tfn };
+/* djObject */ struct _dj_object {             djPair  *pairs ; djObject *next; };
+/* djPair   */ struct _dj_pair   { char *name; djValue *value ; djPair   *next; };
+/* djArray  */ struct _dj_array  {             djValue *values; djArray  *next; };
+/* djString */ struct _dj_string {             char    *string; djString *next; };
 
 /* djValue */
 struct _dj_value
@@ -54,13 +33,6 @@ struct _dj_value
 
 	djValue *next;
 	djValue *prev;
-};
-
-/* djString */
-struct _dj_string
-{
-	char *string;
-	djString *next;
 };
 
 #define dj_type_funcs_decl(type,name) \

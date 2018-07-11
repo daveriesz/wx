@@ -567,9 +567,13 @@ djValue *dj_value_query(djValue *vp, const char *query, int *rv)
 djValue *dj_get_value(dprJson *dj, const char *query)
 {
 	int rv;
-	djValue *djv;
-	
 	// printf("query: %s\n", query);
 	return dj_value_query(dj->root, query, &rv);
 }
 
+djValue *dj_get_subvalue(djValue *dv, const char *query)
+{
+  int rv;
+  djValue *djv;
+  return dj_value_query(dv, query, &rv);
+}
