@@ -2,12 +2,9 @@
 PROGRAM  = wx
 
 CSOURCES = main.c output.c opt.c wxcurl.c geo.c noaa.c
-CFLAGS   = $(COPT) $(CDEF) $(CINC)
-COPT     = -g
 CDEF     = 
 CINC     = -I./json -I./strings
 
-LDFLAGS  = $(LDOPT) $(LDDIR) $(LDLIB)
 LDOPT    = 
 LDDIR    = -L./json -L./strings
 LDLIB    = -ldprjson -ldprstrings -lcurl
@@ -24,7 +21,7 @@ noaa.o  : noaa.c   wx.h
 wxcurl.o: wxcurl.c wx.h
 
 run: $(PROGRAM)
-	$(DBG) ./$< -g -f krei
+	$(DBG) ./$< -g -c KLAX
 
 dbg:
 	@$(MAKE) run DBG="gdb --args"

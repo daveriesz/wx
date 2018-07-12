@@ -42,3 +42,40 @@ void replace_chr(char *str, char chf, char chr)
     *cp = chr;
   }
 }
+
+char **strarrayapp(char **dest, const char *src)
+{
+  char **cpp;
+  int ii;
+  
+  if(dest == NULL)
+  {
+    cpp = (char **)malloc(sizeof(char *) * 2);
+    cpp[0] = strdup(src);
+    cpp[1] = NULL;
+  }
+  else
+  {
+    for(ii=0 ; dest[ii]!=NULL ; ii++);
+//    printf("strarrayapp: newsize = %ld\n", sizeof(char *)*(ii+2));
+    cpp = (char **)realloc(dest, sizeof(char *) * (ii+2));
+    cpp[ii] = strdup(src);
+    cpp[ii+1] = NULL;
+  }
+  return cpp;
+}
+
+void free_null_terminated_array(char ***arr)
+{
+  char **cpp = *arr;
+  int ii;
+  if(cpp == NULL) { return; }
+  for(ii=0 ; cpp[ii] != NULL ; ii++)
+  {
+//    printf("freeing: %s\n", cpp[ii]);
+    free(cpp[ii]);
+  }
+  free(cpp);
+  *arr = NULL;
+}
+

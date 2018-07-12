@@ -5,6 +5,11 @@ LCSOURCES     = $(LSOURCES:%.l=%.l.c)
 YCSOURCES     = $(YSOURCES:%.y=%.tab.c)
 YCHEADERS     = $(YSOURCES:%.y=%.tab.h)
 
+CFLAGS   = $(COPT) $(CDEF) $(CINC)
+COPT     = -g
+
+LDFLAGS  = $(LDOPT) $(LDDIR) $(LDLIB)
+
 all: $(SUBDIRS) $(PROGRAM) $(LIBRARY)
 
 $(SUBDIRS):

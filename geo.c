@@ -22,7 +22,7 @@ geoloc *geo_info(const char *query_str)
   
   loc = strdup(query_str);
   
-  fprintf(stderr, "geo_info(%s)\n", loc);
+//  fprintf(stderr, "geo_info(%s)\n", loc);
   free(loc);
   
   return geo_info_esri(query_str);

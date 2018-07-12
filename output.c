@@ -34,13 +34,18 @@ static int wx_terminal_width()
 	return width;
 }
 
-void wx_print_columns(char **cola, char **colb, char sep, int rows, int wida)
+void wx_print_columns(char **cola, char **colb, char sep, int rows)
 {
   char fmtstr[1024];
-  int maxr, ii, jj, cblen;
+  int maxr, ii, jj, ll, cblen, wida=0;
   char *cb, *cp1, *cp2;
   char *buf;
   
+  for(ii=0 ; ii<rows ; ii++)
+  {
+    if((ll=strlen(cola[ii]))>wida) { wida = ll; }
+  }
+
   sprintf(fmtstr, "%%-%ds %%c %%s\n", wida);
   maxr = (wx_terminal_width() - (wida + 3));
   buf = (char *)malloc(maxr+1);

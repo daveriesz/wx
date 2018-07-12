@@ -24,11 +24,13 @@ typedef struct optarg {
 void opt_usage();
 void opt_geo_info();
 void opt_forecast();
+void opt_conditions();
 static optarg options[]= 
 {
-  { 0, "-h", "print usage",                  opt_usage     },
-  { 0, "-g", "print geographic information", opt_geo_info  },
-  { 0, "-f", "forecast                    ", opt_forecast  },
+  { 0, "-h", "print usage",                  opt_usage      },
+  { 0, "-g", "print geographic information", opt_geo_info   },
+  { 0, "-f", "forecast                    ", opt_forecast   },
+  { 0, "-c", "conditions                  ", opt_conditions },
 };
 static int option_count = (sizeof(options) / sizeof(optarg) );
 
@@ -80,7 +82,7 @@ void readopt(int __argc, char **__argv)
   
   for(ii=1 ; ii<arg_count() ; ii++)
   {
-    printf("readopt ii=%d, arg = >>%s<<\n", ii, arg_value(ii));
+//    printf("readopt ii=%d, arg = >>%s<<\n", ii, arg_value(ii));
     set = 0;
     for(jj=0 ; (set==0) && (jj<option_count) ; jj++)
     {
@@ -124,6 +126,7 @@ void opt_geo_info()
     printf("  name      = >>%s<<\n", geo_location->name );
     printf("  latitude  = >>%f<<\n", geo_location->lat  );
     printf("  longitude = >>%f<<\n", geo_location->lon  );
+    printf("  lat-lon   = >>%f,%f<<\n", geo_location->lat, geo_location->lon);
   }
   else
   {
@@ -135,4 +138,10 @@ void opt_forecast()
 {
   if(geo_location == NULL) { geo_location = geo_info(query_str); }
   noaa_forecast(geo_location);
+}
+
+void opt_conditions()
+{
+  if(geo_location == NULL) { geo_location = geo_info(query_str); }
+  noaa_conditions(geo_location);
 }

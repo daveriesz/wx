@@ -8,7 +8,6 @@ COPT     = -g
 CDEF     = 
 CINC     = -I../strings
 
-LDFLAGS  = $(LDOPT) $(LDDIR) $(LDLIB)
 LDOPT    = 
 LDDIR    = -L. -L../strings
 LDLIB    = -ldprjson -ldprstrings

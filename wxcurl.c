@@ -43,7 +43,7 @@ char *wx_fetch_url(const char *url)
   struct wx_writedata wxd;
   memset(&wxd, 0, sizeof(wxd));
 
-  printf("wx_fetch_url: URL: >>%s<<\n", url);
+//  printf("wx_fetch_url: URL: >>%s<<\n", url);
 
   crl = curl_easy_init();
 

@@ -14,6 +14,10 @@ unsigned char *dataapp(unsigned char *dest, size_t oldsz, const unsigned char *s
 
 void replace_chr(char *str, char chf, char chr);
 
+char **strarrayapp(char **dest, const char *src); /* append string to list, NULL-terminate */
+void free_null_terminated_array(char ***arr);
+
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif /* __cplusplus */
