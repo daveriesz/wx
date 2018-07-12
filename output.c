@@ -37,25 +37,41 @@ static int wx_terminal_width()
 void wx_print_columns(char **cola, char **colb, char sep, int rows, int wida)
 {
   char fmtstr[1024];
-  int maxr, ii, jj;
+  int maxr, ii, jj, cblen;
   char *cb, *cp1, *cp2;
+  char *buf;
   
-  sprintf(fmtstr, "%%-%ds %c %%s\\n", wida, sep);
+  sprintf(fmtstr, "%%-%ds %%c %%s\n", wida);
   maxr = (wx_terminal_width() - (wida + 3));
+  buf = (char *)malloc(maxr+1);
 
   for(ii=0 ; ii<rows ; ii++)
   {
-    cb = strdup(colb[ii]);
-    for(cp1=cb ; strlen(cp1)<maxr ; cp1=cp2)
+    cp1 = cb = strdup(colb[ii]);
+    cblen = strlen(cb);
+    if(strlen(cp1)<maxr)
     {
-      for(cp2=&(cp1[maxr-2]) ; *cp2 != ' ' ; cp2--);
-//      if(cp2
-    
+      printf(fmtstr, cola[ii], ':', cb);
     }
-    
-    
+    else
+    {
+      while(strlen(cp1)>maxr)
+      {
+        memset(buf, 0, maxr+1); 
+        cp2 = &(cp1[maxr-1]);
+        while(*cp2 != ' ') { *cp2--; }
+        if(cp2 != cp1) { *cp2 = '\0' ; cp2++; strcpy(buf, cp1); }
+        else           { strncpy(buf, cp1, cp2-cp1); }
+        printf(fmtstr, (cp1==cb)?cola[ii]:" ", (cp1==cb)?':':' ', buf);
+        cp1 = cp2;
+      }
+      if(cp1-cb < cblen)
+      {
+        printf(fmtstr, " ", ' ', cp1);
+      }
+    }
     free(cb);
   }
-  
+  free(buf);
 }
 

@@ -30,7 +30,9 @@ size_t wx_fetch_write(void *ptr, size_t size, size_t count, void *userdata)
 
 //  *useradata = realloc(*userdata, (size*count));
 //  memcpy(*userdata, ptr, (size*count));
-  
+
+//  printf("wx_fetch_write: returning %ld\n", insize);
+
   return (insize);
 }
 
@@ -55,6 +57,8 @@ char *wx_fetch_url(const char *url)
 
   wxd.data = (char *)realloc(wxd.data, wxd.size+1);
   wxd.data[wxd.size] = '\0';
+
+//  printf("wx_fetch_url finished\n");
 
   return wxd.data;
 }
