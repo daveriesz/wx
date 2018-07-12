@@ -108,14 +108,25 @@ void noaa_forecast(geoloc *glc)
 
 }
 
-#define append_measurement(a, b, d, field) \
-  { \
-    char *__v, *__u; \
-    __v = dj_value_to_string(dj_get_value(d, field ".value"   )); \
-    __u = dj_value_to_string(dj_get_value(d, field ".unitCode")); \
-    a = strarrayapp(a, __v); \
-    b = strarrayapp(b, __u); \
-  }
+void change_units(char **value, char **unit)
+{
+
+}
+
+void append_measurement(char ***vma, char ***uma, dprJson *dj, char *field)
+{
+  char *vv, *uu, *vf=NULL, *uf=NULL;
+  vf = strapp(vf, field); vf = strapp(vf, ".value");
+  uf = strapp(uf, field); uf = strapp(uf, ".unitCode");
+  vv = dj_value_to_string(dj_get_value(dj, vf)); // printf("vf=%s, vv=%s\n", vf, vv);
+  uu = dj_value_to_string(dj_get_value(dj, uf)); // printf("uf=%s, uv=%s\n", uf, uu);
+  change_units(&vv, &uu);
+  *vma = strarrayapp(*vma, vv);
+  *uma = strarrayapp(*uma, uu);
+  free(vf);
+  free(uf);
+}
+
 void noaa_conditions(geoloc *glc)
 {
   char url[16384];
@@ -158,22 +169,22 @@ void noaa_conditions(geoloc *glc)
     char **cloudLayerBaseAmnts = NULL;
     int cloudElements = dj_array_length(dj_get_value(dj, "properties.cloudLayers"));
     
-    append_measurement(measurements, measureunits, dj, "properties.temperature"              );
-    append_measurement(measurements, measureunits, dj, "properties.dewpoint"                 );
-    append_measurement(measurements, measureunits, dj, "properties.windDirection"            );
-    append_measurement(measurements, measureunits, dj, "properties.windSpeed"                );
-    append_measurement(measurements, measureunits, dj, "properties.windGust"                 );
-    append_measurement(measurements, measureunits, dj, "properties.barometricPressure"       );
-    append_measurement(measurements, measureunits, dj, "properties.seaLevelPressure"         );
-    append_measurement(measurements, measureunits, dj, "properties.visibility"               );
-    append_measurement(measurements, measureunits, dj, "properties.maxTemperatureLast24Hours");
-    append_measurement(measurements, measureunits, dj, "properties.minTemperatureLast24Hours");
-    append_measurement(measurements, measureunits, dj, "properties.precipitationLastHour"    );
-    append_measurement(measurements, measureunits, dj, "properties.precipitationLast3Hours"  );
-    append_measurement(measurements, measureunits, dj, "properties.precipitationLast6Hours"  );
-    append_measurement(measurements, measureunits, dj, "properties.relativeHumidity"         );
-    append_measurement(measurements, measureunits, dj, "properties.windChill"                );
-    append_measurement(measurements, measureunits, dj, "properties.heatIndex"                );
+    append_measurement(&measurements, &measureunits, dj, "properties.temperature"              );
+    append_measurement(&measurements, &measureunits, dj, "properties.dewpoint"                 );
+    append_measurement(&measurements, &measureunits, dj, "properties.windDirection"            );
+    append_measurement(&measurements, &measureunits, dj, "properties.windSpeed"                );
+    append_measurement(&measurements, &measureunits, dj, "properties.windGust"                 );
+    append_measurement(&measurements, &measureunits, dj, "properties.barometricPressure"       );
+    append_measurement(&measurements, &measureunits, dj, "properties.seaLevelPressure"         );
+    append_measurement(&measurements, &measureunits, dj, "properties.visibility"               );
+    append_measurement(&measurements, &measureunits, dj, "properties.maxTemperatureLast24Hours");
+    append_measurement(&measurements, &measureunits, dj, "properties.minTemperatureLast24Hours");
+    append_measurement(&measurements, &measureunits, dj, "properties.precipitationLastHour"    );
+    append_measurement(&measurements, &measureunits, dj, "properties.precipitationLast3Hours"  );
+    append_measurement(&measurements, &measureunits, dj, "properties.precipitationLast6Hours"  );
+    append_measurement(&measurements, &measureunits, dj, "properties.relativeHumidity"         );
+    append_measurement(&measurements, &measureunits, dj, "properties.windChill"                );
+    append_measurement(&measurements, &measureunits, dj, "properties.heatIndex"                );
 
     for(ii=0 ; ii<cloudElements ; ii++)
     {
