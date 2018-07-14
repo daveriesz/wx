@@ -1,7 +1,7 @@
 
 PROGRAM  = wx
 
-CSOURCES = main.c output.c opt.c wxcurl.c geo.c noaa.c
+CSOURCES = main.c output.c opt.c units.c wxcurl.c geo.c noaa.c
 CDEF     = 
 CINC     = -I./json -I./strings
 
@@ -19,6 +19,7 @@ opt.o   : opt.c    wx.h
 geo.o   : geo.c    wx.h
 noaa.o  : noaa.c   wx.h
 wxcurl.o: wxcurl.c wx.h
+units.o : units.c  wx.h
 
 run: $(PROGRAM)
 	$(DBG) ./$< -g -c KLAX
