@@ -108,11 +108,6 @@ void noaa_forecast(geoloc *glc)
 
 }
 
-void change_units(char **value, char **unit)
-{
-
-}
-
 void append_measurement(char ***vma, char ***uma, dprJson *dj, char *field)
 {
   char *vv, *uu, *vf=NULL, *uf=NULL;
@@ -120,7 +115,7 @@ void append_measurement(char ***vma, char ***uma, dprJson *dj, char *field)
   uf = strapp(uf, field); uf = strapp(uf, ".unitCode");
   vv = dj_value_to_string(dj_get_value(dj, vf)); // printf("vf=%s, vv=%s\n", vf, vv);
   uu = dj_value_to_string(dj_get_value(dj, uf)); // printf("uf=%s, uv=%s\n", uf, uu);
-  change_units(&vv, &uu);
+  convert_units(&vv, &uu);
   *vma = strarrayapp(*vma, vv);
   *uma = strarrayapp(*uma, uu);
   free(vf);

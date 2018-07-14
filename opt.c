@@ -21,22 +21,26 @@ typedef struct optarg {
   optfcn      fcn;
 } optarg;
 
-void opt_usage();
-void opt_geo_info();
-void opt_forecast();
-void opt_conditions();
+static void opt_usage();
+static void opt_geo_info();
+static void opt_forecast();
+static void opt_conditions();
+static void opt_usemetric();
+static void opt_useimperial();
 static optarg options[]= 
 {
-  { 0, "-h", "print usage",                  opt_usage      },
-  { 0, "-g", "print geographic information", opt_geo_info   },
-  { 0, "-f", "forecast                    ", opt_forecast   },
-  { 0, "-c", "conditions                  ", opt_conditions },
+  { 0, "-h" , "print usage",                  opt_usage       },
+  { 0, "-g" , "print geographic information", opt_geo_info    },
+  { 0, "-f" , "forecast"                    , opt_forecast    },
+  { 0, "-c" , "conditions"                  , opt_conditions  },
+  { 0, "-mm", "use metric units"            , opt_usemetric   },
+  { 1, "-ii", "use imperial units"          , opt_useimperial },
 };
 static int option_count = (sizeof(options) / sizeof(optarg) );
 
 static char *query_str = NULL;;
 
-void opt_usage() { usage(); }
+static void opt_usage() { usage(); }
 void usage()
 {
   int ii;
@@ -116,7 +120,7 @@ void readopt(int __argc, char **__argv)
   }
 }
 
-void opt_geo_info()
+static void opt_geo_info()
 {
   if(geo_location == NULL) { geo_location = geo_info(query_str); }
   printf("Geographic Location Information:\n");
@@ -134,14 +138,29 @@ void opt_geo_info()
   }
 }
 
-void opt_forecast()
+static void opt_forecast()
 {
   if(geo_location == NULL) { geo_location = geo_info(query_str); }
   noaa_forecast(geo_location);
 }
 
-void opt_conditions()
+static void opt_conditions()
 {
   if(geo_location == NULL) { geo_location = geo_info(query_str); }
   noaa_conditions(geo_location);
 }
+
+static enum UnitsType { imperial, metric } units_type = imperial;
+static void opt_usemetric()
+{
+  units_type = metric;
+}
+
+static void opt_useimperial()
+{
+  units_type = imperial;
+}
+
+int using_metric  () { return (units_type==metric  )?1:0; }
+int using_imperial() { return (units_type==imperial)?1:0; }
+
