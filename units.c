@@ -56,8 +56,7 @@ void units_velocity(char **value, char **units)
 
   memset(vbuf, 0, 128);
   memset(ubuf, 0, 128);
-  
-  
+
   if(!strcmp(*units, "unit:m_s-1"))
   {
     if(using_metric()) { sprintf(ubuf, "m/s"); free(*units); *units = strdup(ubuf); }
@@ -81,6 +80,72 @@ void units_velocity(char **value, char **units)
   }
 }
 
+void units_pressure(char **value, char **units)
+{
+  double cvf = 0.00029529983;
+  char vbuf[128], ubuf[128];
+  double val = atof(*value);
+  double newval;
+
+  memset(vbuf, 0, 128);
+  memset(ubuf, 0, 128);
+
+  if(!strcmp(*units, "unit:Pa"))
+  {
+    if(using_metric()) { sprintf(ubuf, "Pa"); free(*units); *units = strdup(ubuf); }
+    else
+    {
+      newval = val * cvf;
+//      printf("velocity val=%f, cvf=%f, newval=%f, val*cvf=%f\n", val, cvf, newval, (val*cvf));
+      sprintf(vbuf, "%.1f", newval); free(*value); *value = strdup(vbuf);
+      sprintf(ubuf, "inHg");         free(*units); *units = strdup(ubuf);
+    }
+  }
+  else if(!strcmp(*units, "unit:mi_hr-1"))
+  {
+    if(using_imperial()) { sprintf(ubuf, "inHg"); free(*units); *units = strdup(ubuf); }
+    else
+    {
+      newval = val / cvf;
+      sprintf(vbuf, "%.1f", newval); free(*value); *value = strdup(vbuf);
+      sprintf(ubuf, "Pa");           free(*units); *units = strdup(ubuf);
+    }
+  }
+}
+
+void units_distance(char **value, char **units)
+{
+  double cvf = 3.2808399;
+  char vbuf[128], ubuf[128];
+  double val = atof(*value);
+  double newval;
+
+  memset(vbuf, 0, 128);
+  memset(ubuf, 0, 128);
+
+  if(!strcmp(*units, "unit:m"))
+  {
+    if(using_metric()) { sprintf(ubuf, "m/s"); free(*units); *units = strdup(ubuf); }
+    else
+    {
+      newval = val * cvf;
+//      printf("velocity val=%f, cvf=%f, newval=%f, val*cvf=%f\n", val, cvf, newval, (val*cvf));
+      sprintf(vbuf, "%.1f", newval); free(*value); *value = strdup(vbuf);
+      sprintf(ubuf, "ft");          free(*units); *units = strdup(ubuf);
+    }
+  }
+  else if(!strcmp(*units, "unit:ft"))
+  {
+    if(using_imperial()) { sprintf(ubuf, "ft"); free(*units); *units = strdup(ubuf); }
+    else
+    {
+      newval = val / cvf;
+      sprintf(vbuf, "%.1f", newval); free(*value); *value = strdup(vbuf);
+      sprintf(ubuf, "m");            free(*units); *units = strdup(ubuf);
+    }
+  }
+}
+
 void convert_units(char **value, char **units)
 {
   if(!strcmp(*value, "null")) { free(*value); *value = strdup("0.0"); }
@@ -88,9 +153,9 @@ void convert_units(char **value, char **units)
   if     (!strcmp(*units, "unit:degC"          )) { units_temperature(value, units); }
   else if(!strcmp(*units, "unit:degree_(angle)")) { units_angle      (value, units); }
   else if(!strcmp(*units, "unit:m_s-1"         )) { units_velocity   (value, units); }
-  else if(!strcmp(*units, "unit:Pa"            )) {}
-  else if(!strcmp(*units, "unit:m"             )) {}
-  else if(!strcmp(*units, "unit:ft"            )) {}
+  else if(!strcmp(*units, "unit:Pa"            )) { units_pressure   (value, units); }
+  else if(!strcmp(*units, "unit:m"             )) { units_distance   (value, units); }
+  else if(!strcmp(*units, "unit:ft"            )) { units_distance   (value, units); }
   else if(!strcmp(*units, "unit:percent"       )) { free(*units); *units = strdup("%");}
-  printf("... val=%s, unit=%s\n", *value, *units);
+//  printf("... val=%s, unit=%s\n", *value, *units);
 }
