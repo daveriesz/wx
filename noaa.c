@@ -122,6 +122,28 @@ void append_measurement(char ***vma, char ***uma, dprJson *dj, char *field)
   free(uf);
 }
 
+char *measurement_string(dprJson *dj, char *field)
+{
+  char *vv, *uu, *vf=NULL, *uf=NULL;
+  char *str = NULL;
+  
+  vf = strapp(vf, field); vf = strapp(vf, ".value");
+  uf = strapp(uf, field); uf = strapp(uf, ".unitCode");
+  vv = dj_value_to_string(dj_get_value(dj, vf));
+  uu = dj_value_to_string(dj_get_value(dj, uf));
+  convert_units(&vv, &uu);
+  str = strapp(str, vv);
+  str = strapp(str, " ");
+  str = strapp(str, uu);
+
+  free(vf);
+  free(uf);
+  free(vv);
+  free(uu);
+
+  return str;
+}
+
 void noaa_conditions(geoloc *glc)
 {
   char url[16384];
@@ -200,6 +222,8 @@ void noaa_conditions(geoloc *glc)
     ii++;
 
     wx_print_columns(cola, colb, ':', ii);
+    for(ii=0 ; measurements[ii] != 0 ; ii++); ii--;
+    wx_print_columns(measurements, measureunits, ':', ii);
 
     free_null_terminated_array(&cola);
     free_null_terminated_array(&colb);

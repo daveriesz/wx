@@ -146,6 +146,22 @@ void units_distance(char **value, char **units)
   }
 }
 
+void units_percent(char **value, char **units)
+{
+  char vbuf[128], ubuf[128];
+  double val = atof(*value);
+  double newval;
+  
+  memset(vbuf, 0, 128);
+  memset(ubuf, 0, 128);
+  
+  sprintf(vbuf, "%.0f", val);
+  free(*value); *value = strdup(vbuf);
+  
+  sprintf(ubuf, "%%");
+  free(*units); *units = strdup(ubuf);
+}
+
 void convert_units(char **value, char **units)
 {
   if(!strcmp(*value, "null")) { free(*value); *value = strdup("0.0"); }
@@ -156,6 +172,6 @@ void convert_units(char **value, char **units)
   else if(!strcmp(*units, "unit:Pa"            )) { units_pressure   (value, units); }
   else if(!strcmp(*units, "unit:m"             )) { units_distance   (value, units); }
   else if(!strcmp(*units, "unit:ft"            )) { units_distance   (value, units); }
-  else if(!strcmp(*units, "unit:percent"       )) { free(*units); *units = strdup("%");}
+  else if(!strcmp(*units, "unit:percent"       )) { units_percent    (value, units); }
 //  printf("... val=%s, unit=%s\n", *value, *units);
 }
