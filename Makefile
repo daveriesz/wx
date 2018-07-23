@@ -22,7 +22,7 @@ wxcurl.o: wxcurl.c wx.h
 units.o : units.c  wx.h
 
 run: $(PROGRAM)
-	$(DBG) ./$< -g -c KLAX
+	$(DBG) ./$< -g -c New Haven, CT
 
 dbg:
 	@$(MAKE) run DBG="gdb --args"

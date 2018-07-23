@@ -177,58 +177,77 @@ void noaa_conditions(geoloc *glc)
   dj = dj_load_from_data(data);
   
   {
-    char **cola = NULL;
-    char **colb = NULL;
     char **measurements = NULL;
-    char **measureunits = NULL;
+    char **measuredescs = NULL;
+    char **cloudLayerLevel = NULL;
+    char **cloudLayerAmnts = NULL;
     char **cloudLayerBaseValue = NULL;
     char **cloudLayerBaseUnits = NULL;
     char **cloudLayerBaseAmnts = NULL;
+    char  *wind = NULL;
+    char  *clouds = NULL;
     int cloudElements = dj_array_length(dj_get_value(dj, "properties.cloudLayers"));
-    
-    append_measurement(&measurements, &measureunits, dj, "properties.temperature"              );
-    append_measurement(&measurements, &measureunits, dj, "properties.dewpoint"                 );
-    append_measurement(&measurements, &measureunits, dj, "properties.windDirection"            );
-    append_measurement(&measurements, &measureunits, dj, "properties.windSpeed"                );
-    append_measurement(&measurements, &measureunits, dj, "properties.windGust"                 );
-    append_measurement(&measurements, &measureunits, dj, "properties.barometricPressure"       );
-    append_measurement(&measurements, &measureunits, dj, "properties.seaLevelPressure"         );
-    append_measurement(&measurements, &measureunits, dj, "properties.visibility"               );
-    append_measurement(&measurements, &measureunits, dj, "properties.maxTemperatureLast24Hours");
-    append_measurement(&measurements, &measureunits, dj, "properties.minTemperatureLast24Hours");
-    append_measurement(&measurements, &measureunits, dj, "properties.precipitationLastHour"    );
-    append_measurement(&measurements, &measureunits, dj, "properties.precipitationLast3Hours"  );
-    append_measurement(&measurements, &measureunits, dj, "properties.precipitationLast6Hours"  );
-    append_measurement(&measurements, &measureunits, dj, "properties.relativeHumidity"         );
-    append_measurement(&measurements, &measureunits, dj, "properties.windChill"                );
-    append_measurement(&measurements, &measureunits, dj, "properties.heatIndex"                );
 
+    wind = strapp(wind, measurement_string(dj, "properties.windDirection"));
+    wind = strapp(wind, " @ ");
+    wind = strapp(wind, measurement_string(dj, "properties.windSpeed"));
+    wind = strapp(wind, " / gust: ");
+    wind = strapp(wind, measurement_string(dj, "properties.windGust"));
+
+    measurements = strarrayapp(measurements, dj_value_to_string(dj_get_value(dj, "properties.timestamp"      )));
+    measurements = strarrayapp(measurements, dj_value_to_string(dj_get_value(dj, "properties.rawMessage"     )));
+    measurements = strarrayapp(measurements, dj_value_to_string(dj_get_value(dj, "properties.textDescription")));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.temperature"              ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.dewpoint"                 ));
+    measurements = strarrayapp(measurements, wind);
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.barometricPressure"       ));
+//    measurements = strarrayapp(measurements, measurement_string(dj, "properties.seaLevelPressure"         ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.visibility"               ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.maxTemperatureLast24Hours"));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.minTemperatureLast24Hours"));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.precipitationLastHour"    ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.precipitationLast3Hours"  ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.precipitationLast6Hours"  ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.relativeHumidity"         ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.windChill"                ));
+    measurements = strarrayapp(measurements, measurement_string(dj, "properties.heatIndex"                ));
+
+    measuredescs = strarrayapp(measuredescs, "Time"            );
+    measuredescs = strarrayapp(measuredescs, "METAR"           );
+    measuredescs = strarrayapp(measuredescs, "Observation"     );
+    measuredescs = strarrayapp(measuredescs, "Temperature"     );
+    measuredescs = strarrayapp(measuredescs, "Dewpoint"        );
+    measuredescs = strarrayapp(measuredescs, "Wind"            );
+    measuredescs = strarrayapp(measuredescs, "Visibility"      );
+    measuredescs = strarrayapp(measuredescs, "Pressure"        );
+    measuredescs = strarrayapp(measuredescs, "24 hour max temp");
+    measuredescs = strarrayapp(measuredescs, "24 hour min temp");
+    measuredescs = strarrayapp(measuredescs, "1 hour precip"   );
+    measuredescs = strarrayapp(measuredescs, "3 hour precip"   );
+    measuredescs = strarrayapp(measuredescs, "6 hour precip"   );
+    measuredescs = strarrayapp(measuredescs, "Humidity"        );
+    measuredescs = strarrayapp(measuredescs, "Wind chill"      );
+    measuredescs = strarrayapp(measuredescs, "Heat index"      );
+    
     for(ii=0 ; ii<cloudElements ; ii++)
     {
       dv = dj_array_element(dj_get_value(dj, "properties.cloudLayers"), ii);
       cloudLayerBaseValue = strarrayapp(cloudLayerBaseValue, dj_value_to_string(dj_get_subvalue(dv, "base.value"   )));
       cloudLayerBaseUnits = strarrayapp(cloudLayerBaseUnits, dj_value_to_string(dj_get_subvalue(dv, "base.unitCode")));
       cloudLayerBaseAmnts = strarrayapp(cloudLayerBaseAmnts, dj_value_to_string(dj_get_subvalue(dv, "amount"       )));
+      clouds = strapp(clouds, "Clouds ");
+      clouds = strapp(clouds, dj_value_to_string(dj_get_subvalue(dv, "base.value")));
+      clouds = strapp(clouds, " ");
+      clouds = strapp(clouds, dj_value_to_string(dj_get_subvalue(dv, "base.unitCode")));
+      cloudLayerLevel = strarrayapp(cloudLayerLevel, clouds);
+      cloudLayerAmnts = strarrayapp(cloudLayerBaseAmnts, dj_value_to_string(dj_get_subvalue(dv, "amount"       )));
     }
+    
+    for(ii=0 ; measurements && (measurements[ii] != NULL) ; ii++); // ii--;
+    wx_print_columns(measuredescs, measurements, ':', ii);
 
-    ii=0;
-
-    cola = strarrayapp(cola, "Time");
-    colb = strarrayapp(colb, dj_value_to_string(dj_get_value(dj, "properties.timestamp")));
-    ii++;
-
-    cola = strarrayapp(cola, "METAR");
-    colb = strarrayapp(colb, dj_value_to_string(dj_get_value(dj, "properties.rawMessage")));
-    ii++;
-
-    wx_print_columns(cola, colb, ':', ii);
-    for(ii=0 ; measurements[ii] != 0 ; ii++); ii--;
-    wx_print_columns(measurements, measureunits, ':', ii);
-
-    free_null_terminated_array(&cola);
-    free_null_terminated_array(&colb);
     free_null_terminated_array(&measurements);
-    free_null_terminated_array(&measureunits);
+    free_null_terminated_array(&measuredescs);
     free_null_terminated_array(&cloudLayerBaseValue);
     free_null_terminated_array(&cloudLayerBaseUnits);
     free_null_terminated_array(&cloudLayerBaseAmnts);

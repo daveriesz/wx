@@ -78,7 +78,7 @@ geoloc *geo_info_esri(const char *query_str)
   candidates = dj_get_value(dj, "candidates");
   cdcount = dj_array_length(candidates);
 //  printf("candidates = %p\n", candidates);
-  printf("candidates length = %d\n", cdcount);
+//  printf("candidates length = %d\n", cdcount);
 
   for(ii=0 ; (choice==NULL) && (ii<(sizeof(esri_categories)/sizeof(char *))) ; ii++)
   {

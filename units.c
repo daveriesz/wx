@@ -42,9 +42,17 @@ void units_temperature(char **value, char **units)
 
 void units_angle(char **value, char **units)
 {
+  char vbuf[128], ubuf[128];
+  double val = atof(*value);
+
+  memset(vbuf, 0, 128);
+  memset(ubuf, 0, 128);
+
   if(strcmp(*units, "unit:degree_(angle)")) { return; }
-  free(*units);
-  *units = strdup("\u00B0");  
+  sprintf(vbuf, "%.0f", val);
+  sprintf(ubuf, "\u00B0");
+  free(*value); *value = strdup(vbuf);  
+  free(*units); *units = strdup(ubuf);  
 }
 
 void units_velocity(char **value, char **units)
@@ -98,7 +106,7 @@ void units_pressure(char **value, char **units)
       newval = val * cvf;
 //      printf("velocity val=%f, cvf=%f, newval=%f, val*cvf=%f\n", val, cvf, newval, (val*cvf));
       sprintf(vbuf, "%.1f", newval); free(*value); *value = strdup(vbuf);
-      sprintf(ubuf, "inHg");         free(*units); *units = strdup(ubuf);
+      sprintf(ubuf, "in");           free(*units); *units = strdup(ubuf);
     }
   }
   else if(!strcmp(*units, "unit:mi_hr-1"))
