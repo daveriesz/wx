@@ -172,6 +172,7 @@ void units_percent(char **value, char **units)
 
 void convert_units(char **value, char **units)
 {
+  if((value == NULL) || (*value == NULL)) { return; }
   if(!strcmp(*value, "null")) { free(*value); *value = strdup("0.0"); }
 //  printf("change units: %s\n", using_imperial()?"imperial":"metric");
   if     (!strcmp(*units, "unit:degC"          )) { units_temperature(value, units); }

@@ -8,10 +8,12 @@
 
 #include "wx.h"
 
-#define NOAA_FORECAST_URL     "https://api.weather.gov/points/%f,%f/forecast"
-#define NOAA_POINT_URL        "https://api.weather.gov/points/%f,%f"
-#define NOAA_STATIONS_URL     "https://api.weather.gov/points/%f,%f/stations"
-#define NOAA_OBSERVATIONS_URL "https://api.weather.gov/stations/%s/observations/current"
+#define NOAA_FORECAST_URL      "https://api.weather.gov/points/%f,%f/forecast"
+#define NOAA_POINT_URL         "https://api.weather.gov/points/%f,%f"
+#define NOAA_STATIONS_URL      "https://api.weather.gov/points/%f,%f/stations"
+#define NOAA_OBSERVATIONS_URL  "https://api.weather.gov/stations/%s/observations/current"
+#define NOAA_PRODUCT_TYPES_URL "https://api.weather.gov/products/types"
+#define NOAA_LOC_PRODUCTS_URL  "https://api.weather.gov/products/locations/%s/types"
 
 void noaa_point_info(geoloc *glc, char **fields, char **values_return)
 {
@@ -165,8 +167,8 @@ void noaa_conditions(geoloc *glc)
   data = wx_fetch_url(url);
   dj = dj_load_from_data(data);
 //  printf("data = %s\n", data);
-  dv = dj_array_element(dj_get_value(dj, "features"), 0);
   free(data);
+  dv = dj_array_element(dj_get_value(dj, "features"), 0);
   iden = dj_value_to_string(dj_get_subvalue(dv, "properties.stationIdentifier"));
   name = dj_value_to_string(dj_get_subvalue(dv, "properties.name"));
   dj_delete(dj);
@@ -257,3 +259,74 @@ void noaa_conditions(geoloc *glc)
   free(name);
   dj_delete(dj);
 }
+
+static void noaa_list_active_products()
+{
+  char *data, *pcode, *pname;
+  dprJson *dj;
+  djValue *dv;
+  int elements, ii;
+
+  printf("Currently Active NOAA Products:\n");
+  
+  data = wx_fetch_url(NOAA_PRODUCT_TYPES_URL);
+  dj = dj_load_from_data(data);
+  free(data);
+
+  elements = dj_array_length(dj_get_value(dj, "@graph"));
+  for(ii=0 ; ii<elements ; ii++)
+  {
+    dv = dj_array_element(dj_get_value(dj, "@graph"), ii);
+    pcode = dj_value_to_string(dj_get_subvalue(dv, "productCode"));
+    pname = dj_value_to_string(dj_get_subvalue(dv, "productName"));
+    printf(" - %3s: %s\n", pcode, pname);
+    free(pcode);
+    free(pname);
+  }
+  dj_delete(dj);
+}
+
+void noaa_list_products(geoloc *glc)
+{
+//  if(glc == NULL) { noaa_list_active_products(); }
+  char url[16384];
+  char *data, *pcode, *pname;
+  dprJson *dj;
+  djValue *dv;
+  int elements, ii;
+  char *point_info_fields[] = {
+    "properties.cwa",
+    "properties.relativeLocation.properties.city",
+    "properties.relativeLocation.properties.state",
+    NULL };
+  char *point_values[3];
+
+  if(glc == NULL) 
+  {
+    printf("Currently Active NOAA Products:\n");
+    sprintf(url, NOAA_PRODUCT_TYPES_URL);
+  }
+  else
+  {
+    noaa_point_info(glc, point_info_fields, point_values);
+    printf("Available NOAA Products for %s, %s (%s) ***\n", point_values[1], point_values[2], point_values[0]);
+    sprintf(url, NOAA_LOC_PRODUCTS_URL, point_values[0]);
+  }
+
+  data = wx_fetch_url(url);
+  dj = dj_load_from_data(data);
+  free(data);
+
+  elements = dj_array_length(dj_get_value(dj, "@graph"));
+  for(ii=0 ; ii<elements ; ii++)
+  {
+    dv = dj_array_element(dj_get_value(dj, "@graph"), ii);
+    pcode = dj_value_to_string(dj_get_subvalue(dv, "productCode"));
+    pname = dj_value_to_string(dj_get_subvalue(dv, "productName"));
+    printf(" - %3s: %s\n", pcode, pname);
+    free(pcode);
+    free(pname);
+  }
+  dj_delete(dj);
+}
+

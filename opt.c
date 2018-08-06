@@ -22,20 +22,22 @@ typedef struct optarg {
   optfcn      fcn;
 } optarg;
 
-static void opt_usage      ();
-static void opt_geo_info   ();
-static void opt_forecast   ();
-static void opt_conditions ();
-static void opt_usemetric  ();
-static void opt_useimperial();
+static void opt_usage                 ();
+static void opt_geo_info              ();
+static void opt_forecast              ();
+static void opt_conditions            ();
+static void opt_usemetric             ();
+static void opt_useimperial           ();
+static void opt_noaa_product_types    ();
 static optarg options[]= 
 {
-  { 0, "-h" , NULL, "print usage",                  opt_usage       },
-  { 0, "-g" , NULL, "print geographic information", opt_geo_info    },
-  { 0, "-f" , NULL, "forecast"                    , opt_forecast    },
-  { 0, "-c" , "=" , "conditions"                  , opt_conditions  },
-  { 0, "-mm", NULL, "use metric units"            , opt_usemetric   },
-  { 1, "-ii", NULL, "use imperial units"          , opt_useimperial },
+  { 0, "-h"        , NULL, "print usage"                         , opt_usage                  },
+  { 0, "-g"        , NULL, "print geographic information"        , opt_geo_info               },
+  { 0, "-f"        , NULL, "forecast"                            , opt_forecast               },
+  { 0, "-c"        , "=" , "conditions"                          , opt_conditions             },
+  { 0, "-mm"       , NULL, "use metric units"                    , opt_usemetric              },
+  { 1, "-ii"       , NULL, "use imperial units"                  , opt_useimperial            },
+  { 0, "-noaaprods", NULL, "available NOAA product types"        , opt_noaa_product_types     },
 };
 static int option_count = (sizeof(options) / sizeof(optarg) );
 
@@ -164,4 +166,11 @@ static void opt_useimperial()
 
 int using_metric  () { return (units_type==metric  )?1:0; }
 int using_imperial() { return (units_type==imperial)?1:0; }
+
+static void opt_noaa_product_types()
+{
+  if(geo_location == NULL) { geo_location = geo_info(query_str) ; }
+  noaa_list_products(geo_location);
+}
+
 
