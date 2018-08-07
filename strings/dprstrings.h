@@ -17,6 +17,9 @@ void replace_chr(char *str, char chf, char chr);
 char **strarrayapp(char **dest, const char *src); /* append string to list, NULL-terminate */
 void free_null_terminated_array(char ***arr);
 
+char **new_list(const char *src, int delim);
+
+char *replace_str(char *str, char *sf, char *st);
 
 #ifdef __cplusplus
 } /* extern "C" */

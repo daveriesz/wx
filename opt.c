@@ -13,37 +13,39 @@ static geoloc *geo_location = NULL;
 static int    opt_argc;
 static char **opt_argv;
 
-typedef void (*optfcn)();
-typedef struct optarg {
+typedef struct optarg optarg;
+typedef void (*optfcn)(optarg *);
+struct optarg {
   int         set;
   const char *opt;
   const char *xpt;
+        char *xps;
   const char *dsc;
   optfcn      fcn;
-} optarg;
+};
 
-static void opt_usage                 ();
-static void opt_geo_info              ();
-static void opt_forecast              ();
-static void opt_conditions            ();
-static void opt_usemetric             ();
-static void opt_useimperial           ();
-static void opt_noaa_product_types    ();
+static void opt_usage                 (optarg *arg);
+static void opt_geo_info              (optarg *arg);
+static void opt_forecast              (optarg *arg);
+static void opt_conditions            (optarg *arg);
+static void opt_usemetric             (optarg *arg);
+static void opt_useimperial           (optarg *arg);
+static void opt_noaa_product_types    (optarg *arg);
 static optarg options[]= 
 {
-  { 0, "-h"        , NULL, "print usage"                         , opt_usage                  },
-  { 0, "-g"        , NULL, "print geographic information"        , opt_geo_info               },
-  { 0, "-f"        , NULL, "forecast"                            , opt_forecast               },
-  { 0, "-c"        , "=" , "conditions"                          , opt_conditions             },
-  { 0, "-mm"       , NULL, "use metric units"                    , opt_usemetric              },
-  { 1, "-ii"       , NULL, "use imperial units"                  , opt_useimperial            },
-  { 0, "-noaaprods", NULL, "available NOAA product types"        , opt_noaa_product_types     },
+  { 0, "-h"  , NULL, NULL, "print usage"                         , opt_usage                  },
+  { 0, "-g"  , NULL, NULL, "print geographic information"        , opt_geo_info               },
+  { 0, "-f"  , NULL, NULL, "forecast"                            , opt_forecast               },
+  { 0, "-c"  , "=" , NULL, "conditions"                          , opt_conditions             },
+  { 0, "-mm" , NULL, NULL, "use metric units"                    , opt_usemetric              },
+  { 1, "-ii" , NULL, NULL, "use imperial units"                  , opt_useimperial            },
+  { 0, "-np" , "=" , NULL, "available NOAA product types"        , opt_noaa_product_types     },
 };
 static int option_count = (sizeof(options) / sizeof(optarg) );
 
 static char *query_str = NULL;;
 
-static void opt_usage() { usage(); }
+static void opt_usage(optarg *arg) { usage(); }
 void usage()
 {
   int ii;
@@ -97,6 +99,14 @@ void readopt(int __argc, char **__argv)
       {
         set = options[jj].set = 1;
       }
+      else if(
+               (!strncmp(arg_value(ii), options[jj].opt, strlen(options[jj].opt))) &&
+               (!strncmp(&(arg_value(ii)[strlen(options[jj].opt)]), options[jj].xpt, strlen(options[jj].xpt)))
+             )
+      {
+        set = options[jj].set = 1;
+        options[jj].xps = strdup(&(arg_value(ii)[strlen(options[jj].opt)+strlen(options[jj].xpt)]));
+      }
     }
 
     if(set == 0)
@@ -118,12 +128,12 @@ void readopt(int __argc, char **__argv)
   {
     if(options[ii].set != 0)
     {
-      options[ii].fcn();
+      options[ii].fcn(&(options[ii]));
     }
   }
 }
 
-static void opt_geo_info()
+static void opt_geo_info(optarg *arg)
 {
   if(geo_location == NULL) { geo_location = geo_info(query_str); }
   printf("Geographic Location Information:\n");
@@ -141,25 +151,25 @@ static void opt_geo_info()
   }
 }
 
-static void opt_forecast()
+static void opt_forecast(optarg *arg)
 {
   if(geo_location == NULL) { geo_location = geo_info(query_str); }
   noaa_forecast(geo_location);
 }
 
-static void opt_conditions()
+static void opt_conditions(optarg *arg)
 {
   if(geo_location == NULL) { geo_location = geo_info(query_str); }
-  noaa_conditions(geo_location);
+  noaa_conditions(geo_location, arg->xps);
 }
 
 static enum UnitsType { imperial, metric } units_type = imperial;
-static void opt_usemetric()
+static void opt_usemetric(optarg *arg)
 {
   units_type = metric;
 }
 
-static void opt_useimperial()
+static void opt_useimperial(optarg *arg)
 {
   units_type = imperial;
 }
@@ -167,10 +177,11 @@ static void opt_useimperial()
 int using_metric  () { return (units_type==metric  )?1:0; }
 int using_imperial() { return (units_type==imperial)?1:0; }
 
-static void opt_noaa_product_types()
+static void opt_noaa_product_types(optarg *arg)
 {
-  if(geo_location == NULL) { geo_location = geo_info(query_str) ; }
-  noaa_list_products(geo_location);
+  if(geo_location==NULL) { geo_location = geo_info(query_str) ; }
+  if((geo_location==NULL) || ((arg->xps)==NULL)) { noaa_list_products(geo_location); }
+  else { noaa_products(geo_location, arg->xps); }
 }
 
 

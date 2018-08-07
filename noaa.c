@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include <dprstrings.h>
 #include <dprjson.h>
@@ -14,6 +15,7 @@
 #define NOAA_OBSERVATIONS_URL  "https://api.weather.gov/stations/%s/observations/current"
 #define NOAA_PRODUCT_TYPES_URL "https://api.weather.gov/products/types"
 #define NOAA_LOC_PRODUCTS_URL  "https://api.weather.gov/products/locations/%s/types"
+#define NOAA_LOC_PRODUCT_URL   "https://api.weather.gov/products/types/%s/locations/%s"
 
 void noaa_point_info(geoloc *glc, char **fields, char **values_return)
 {
@@ -146,7 +148,7 @@ char *measurement_string(dprJson *dj, char *field)
   return str;
 }
 
-void noaa_conditions(geoloc *glc)
+void noaa_conditions(geoloc *glc, char *xps)
 {
   char url[16384];
   char *data, *iden, *name;
@@ -161,7 +163,10 @@ void noaa_conditions(geoloc *glc)
   int ii;
 
   noaa_point_info(glc, point_info_fields, point_values);
-  printf("*** Conditions at %s, %s (%s) ***\n", point_values[1], point_values[2], point_values[0]);
+  if(xps == NULL)
+  {
+    printf("*** Conditions at %s, %s (%s) ***\n", point_values[1], point_values[2], point_values[0]);
+  }
 
   sprintf(url, NOAA_STATIONS_URL, glc->lat, glc->lon);
   data = wx_fetch_url(url);
@@ -178,6 +183,7 @@ void noaa_conditions(geoloc *glc)
 //  printf("data = %s\n", data);
   dj = dj_load_from_data(data);
   
+  if(xps == NULL)
   {
     char **measurements = NULL;
     char **measuredescs = NULL;
@@ -254,6 +260,26 @@ void noaa_conditions(geoloc *glc)
     free_null_terminated_array(&cloudLayerBaseUnits);
     free_null_terminated_array(&cloudLayerBaseAmnts);
   }
+  else
+  {
+    char **elements = new_list(xps, ',');
+    char *prop, *meas;
+    int ii;
+
+    for(ii=0 ; elements && elements[ii] != NULL ; ii++)
+    {
+//      printf("element = >>%s<<\n", elements[ii]);
+      prop = NULL;
+      prop = strapp(prop, "properties.");
+      prop = strapp(prop, elements[ii]);
+      meas = measurement_string(dj, prop);
+      printf("%s\n", meas);
+      free(prop);
+      free(meas);
+    }
+    
+    free_null_terminated_array(&elements);
+  }
   
   free(iden);
   free(name);
@@ -328,5 +354,55 @@ void noaa_list_products(geoloc *glc)
     free(pname);
   }
   dj_delete(dj);
+}
+
+void noaa_products(geoloc *glc, char *xps)
+{
+  char url[16384];
+  char *point_info_fields[] = {
+    "properties.cwa",
+    "properties.relativeLocation.properties.city",
+    "properties.relativeLocation.properties.state",
+    NULL };
+  char *point_values[3];
+  char **prods = new_list(xps, ',');
+  int ii;
+  char *data, *idv, *cp;
+  dprJson *dj;
+  djValue *dv;
+
+  noaa_point_info(glc, point_info_fields, point_values);
+
+  for(ii=0 ; prods[ii] != NULL ; ii++)
+  {
+    for(cp=prods[ii] ; cp && *cp ; cp++) { *cp = toupper(*cp); }
+    sprintf(url, NOAA_LOC_PRODUCT_URL, prods[ii], point_values[0]);
+    printf("url: %s\n", url);    
+    data = wx_fetch_url(url);
+    dj = dj_load_from_data(data);
+    free(data);
+    dv = dj_get_value(dj, "@graph");
+    if(dj_array_length(dv) <= 0)
+    {
+      printf("\n\n**** %s has no product %s ****\n\n", point_values[0], prods[ii]);
+      continue;
+    }
+    dv = dj_array_element(dv, 0);
+    idv = dj_value_to_string(dj_get_subvalue(dv, "@id"));
+    sprintf(url, "%s", idv);
+    printf("   : %s\n", url);
+    dj_delete(dj);
+
+    data = wx_fetch_url(url);
+    dj = dj_load_from_data(data);
+    free(data);
+    cp = dj_value_to_string(dj_get_value(dj, "productText"));
+    cp = replace_str(cp, "\\n", "\n");
+    printf("%s", cp);
+    free(cp);
+    dj_delete(dj);
+  }
+
+  free_null_terminated_array(&prods);
 }
 

@@ -101,7 +101,7 @@ geoloc *geo_info_esri(const char *query_str)
     val = dj_array_element(candidates, ii);
     country = dj_value_to_string(dj_get_subvalue(val, "attributes.Country"));
     placename = dj_value_to_string(dj_get_subvalue(val, "attributes.PlaceName"));
-    printf("val: %s, %s\n", country, placename);
+//    printf("val: %s, %s\n", country, placename);
     if((!strcmp(country, "USA")) && (!strcasecmp(placename, query_str))) { choice = val; }
     free(country);
     free(placename);

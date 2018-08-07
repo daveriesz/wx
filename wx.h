@@ -28,8 +28,9 @@ void geo_delete_geoloc(geoloc *glc);
 /*** noaa.c ***/
 void noaa_point_info   (geoloc *glc, char **fields, char **values_return);
 void noaa_forecast     (geoloc *glc);
-void noaa_conditions   (geoloc *glc);
+void noaa_conditions   (geoloc *glc, char *xps);
 void noaa_list_products(geoloc *glc);
+void noaa_products     (geoloc *glc, char *xps);
 
 /*** output.c ***/
 void wx_print_columns(char **cola, char **colb, char sep, int rows);
